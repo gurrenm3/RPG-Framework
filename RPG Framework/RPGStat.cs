@@ -14,13 +14,15 @@ namespace RPG_Framework
         /// Called when a level is gained. If multiple levels are gained it will fire for
         /// each level gained
         /// </summary>
-        public List<Action> OnLevelRaised { get; set; } = new List<Action>();
+        [NonSerialized]
+        public List<Action<RPGStat>> onLevelRaised = new List<Action<RPGStat>>();
 
         /// <summary>
         /// Called when a level is lost. If multiple levels are lost it will fire for
         /// each level lost
         /// </summary>
-        public List<Action> OnLevelReduced { get; set; } = new List<Action>();
+        [NonSerialized]
+        public List<Action<RPGStat>> onLevelReduced = new List<Action<RPGStat>>();
 
         /// <summary>
         /// Name of the stat
@@ -220,7 +222,7 @@ namespace RPG_Framework
             {
                 CurrentLevel++;
                 CurrentExp = 0;
-                OnLevelRaised?.InvokeAll();
+                onLevelRaised?.InvokeAll(this);
                 numLevels--;
             }
         }
@@ -236,7 +238,7 @@ namespace RPG_Framework
             {
                 CurrentLevel--;
                 CurrentExp = 0;
-                OnLevelReduced?.InvokeAll();
+                onLevelReduced?.InvokeAll(this);
                 numLevels--;
             }
         }

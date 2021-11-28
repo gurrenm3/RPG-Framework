@@ -69,7 +69,7 @@ namespace RPG_Framework
             return stat;
         }
 
-        private static void Init(RPGStat stat)
+        protected static void Init(RPGStat stat)
         {
             
         }

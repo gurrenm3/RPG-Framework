@@ -7,7 +7,7 @@
         static void Main(string[] args)
         {
             var poppingPower = RPGStatFactory.Create("Popping Power", maxLevel:50);
-            poppingPower.OnLevelRaised.Add(new Action(() => Console.WriteLine("You leveled up! Current level: " + poppingPower.CurrentLevel)));
+            poppingPower.onLevelRaised.Add(new Action(() => Console.WriteLine("You leveled up! Current level: " + poppingPower.CurrentLevel)));
             poppingPower.RaiseLevel(1);
             poppingPower.RaiseExp(1000);
 
