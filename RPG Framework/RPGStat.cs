@@ -12,56 +12,59 @@ namespace RPG_Framework
     {
         /// <summary>
         /// Called when a level is gained. If multiple levels are gained it will fire for
-        /// each level gained
+        /// each level gained.
         /// </summary>
         [NonSerialized]
         public List<Action<RPGStat>> onLevelRaised = new List<Action<RPGStat>>();
 
         /// <summary>
         /// Called when a level is lost. If multiple levels are lost it will fire for
-        /// each level lost
+        /// each level lost.
         /// </summary>
         [NonSerialized]
         public List<Action<RPGStat>> onLevelReduced = new List<Action<RPGStat>>();
 
         /// <summary>
-        /// Name of the stat
+        /// Name of the stat.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
         /// Display name for the stat. Can be used if you want the Stat Name to be different from
-        /// what gets displayed in game. By default it will be the same as Name
+        /// what gets displayed in game. By default it will be the same as Name.
         /// </summary>
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Current Exp for the stat
+        /// Current Exp for the stat. Try to avoid setting this directly and instead use <see cref="RaiseExp(double)"/>
+        /// or <see cref="ReduceExp(double)"/> to modify it. They have logic that guarantees things work correctly.
         /// </summary>
-        public double CurrentExp { get; private set; }
+        public double CurrentExp { get; set; }
 
         /// <summary>
-        /// Current level of the stat. Starts at level 0
+        /// Current level of the stat. Starts at level 0. Try to avoid setting this directly and instead use <see cref="RaiseLevel(int)"/>
+        /// or <see cref="ReduceLevel(int)"/> to modify it. Using <see cref="RaiseExp(double)"/> and <see cref="ReduceExp(double)"/> will
+        /// also modify the level automatically. This is recommended because those methods have logic that guarantees things work correctly.
         /// </summary>
-        public int CurrentLevel { get; private set; } = 0;
+        public int CurrentLevel { get; set; } = 0;
 
         /// <summary>
-        /// Minimum level the stat can be
+        /// Minimum level the stat can be.
         /// </summary>
         public int MinLevel { get; set; } = 0;
 
         /// <summary>
-        /// Max level of the stat
+        /// Max level of the stat.
         /// </summary>
-        public int MaxLevel { get; private set; }
+        public int MaxLevel { get; set; }
 
         /// <summary>
-        /// An ExpTable containing a list of how much Exp is required to level up for each level
+        /// An ExpTable containing a list of how much Exp is required to level up for each level.
         /// </summary>
         public ExpTable ExpTable { get; set; }
 
         /// <summary>
-        /// Create a default RPGStat
+        /// Create a default RPGStat.
         /// </summary>
         public RPGStat()
         {
@@ -69,10 +72,10 @@ namespace RPG_Framework
         }
 
         /// <summary>
-        /// Creates a RPGStat with a name and max level
+        /// Creates a RPGStat with a name and max level.
         /// </summary>
-        /// <param name="name">Name of the Stat. By default it will also be applied to DisplayName</param>
-        /// <param name="maxLevel">Max level for the stat</param>
+        /// <param name="name">Name of the Stat. By default it will also be applied to DisplayName.</param>
+        /// <param name="maxLevel">Max level for the stat.</param>
         public RPGStat(string name, int maxLevel)
         {
             Name = name;
@@ -81,14 +84,14 @@ namespace RPG_Framework
         }
 
         /// <summary>
-        /// Creates a RPGStat with a name, max level, and ExpTable
+        /// Creates a RPGStat with a name, max level, and ExpTable.
         /// </summary>
-        /// <param name="name">Name of the Stat. By default it will also be applied to DisplayName</param>
-        /// <param name="maxLevel">Max level for the stat</param>
+        /// <param name="name">Name of the Stat. By default it will also be applied to DisplayName.</param>
+        /// <param name="maxLevel">Max level for the stat.</param>
         /// <param name="baseExp">Used for creating the ExpTable. The amount of Exp that each level should be based off of. Also the
-        /// amount of Exp for level 1 to level up</param>
+        /// amount of Exp for level 1 to level up.</param>
         /// <param name="expMultiplier">Used for creating the ExpTable. The amount to multiply the
-        /// Exp required for each level to level up</param>
+        /// Exp required for each level to level up.</param>
         public RPGStat(string name, int maxLevel, double baseExp, double expMultiplier) : this(name, maxLevel)
         {
             ExpTable = ExpTable.CreateFromMultiplier(baseExp, expMultiplier, maxLevel);
@@ -106,7 +109,7 @@ namespace RPG_Framework
             while (CurrentLevel <= MaxLevel && amountToAdd > 0)// && we still have EXP to level up)
             {
                 double expToLevelUp = ExpTable.GetRemainingExp(CurrentLevel, CurrentExp);
-                if (expToLevelUp < 0)
+                if (expToLevelUp < 0 || (expToLevelUp == 0 && CurrentLevel == MaxLevel))
                     break;
 
                 if (amountToAdd < expToLevelUp) // we can't level up
